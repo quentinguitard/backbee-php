@@ -49,95 +49,62 @@ class PropertyIconizerTest extends BackBeeTestCase {
     
     public function testGetIcon(){
 
-	$this->content	 
-	    ->mockedDefineData(
-		'imageTest',
-		'BackBee\ClassContent\Element\Image',
-		array()
-	    )
-	    ->mockedDefineData(
-		'image',
-		'BackBee\ClassContent\Element\Image',
-		array()
-	    );
-	 $this->content
-	     ->mockedDefineProperty('iconized-by', 'image')
-//	     ->setProperty(
-//		'iconized-by','image'
-//	    )
-	    ;
-
-	$prop1 = $this->property->getIcon($this->content);
-	$this->assertTrue($prop1 instanceof AbstractContent);	
+	$this->content
+	     ->setProperty('iconized-by', 'image->path');
 	
 	$this->content	 
 	    ->mockedDefineData(
 		'imageTest',
 		'BackBee\ClassContent\Element\Image',
 		array()
-	    )
-	    ->mockedDefineData(
+	    );
+	
+	$this->content   ->mockedDefineData(
 		'image',
 		'BackBee\ClassContent\Element\Image',
 		array()
-	    )
-	    ->setProperty(
-		'iconized-by','/resources/'
 	    );
+	$this->content->image->path = 'aaa/test';
 
+	$prop1 = $this->property->getIcon($this->content);
+
+	$this->assertTrue($prop1 == '/images/aaa/test');	
+
+	$this->content->image->path = 'test1/test2';
 	$prop2 = $this->property->getIcon($this->content);
-	$this->assertTrue($prop2 instanceof AbstractContent);
+	$this->assertTrue($prop2 == '/images/test1/test2');
+	
+	$this->content
+	     ->setProperty('iconized-by', '@imageParam');
+	$this->content->mockedDefineParam('imageParam', 'aaa/eee');
+
+	$prop3 = $this->property->getIcon($this->content);
+	$this->assertTrue($prop3 == '/aaa/eee');
+	
+	$this->content
+	     ->setProperty('iconized-by', '@imageTest');
+	$this->content->mockedDefineParam('imageTest', 'test');
+	$prop4 = $this->property->getIcon($this->content);
+	$this->assertTrue($prop4 == '/test');
 
     }
 
     public function testParseProperty()
     {
 
-	$this->content	 
-	    ->mockedDefineData(
-		'imageTest',
-		'BackBee\ClassContent\Element\Image',
-		array()
-	    )
-	    ->mockedDefineData(
-		'image',
-		'BackBee\ClassContent\Element\Image',
-		array()
-	    )
-	    ->setProperty(
-		'iconized-by','image'
-	    );
-	$prop1 = $this->invokeMethod($this->property, 'parseProperty', array($this->content, 'image'));
-	$this->assertTrue($prop1 instanceof AbstractContent);	
+    // tested in getIcon
 
     }
 
 
     public function testIconizeByParam()
     {
+	$this->content
+	     ->setProperty('iconized-by', '@imageParam');
+	$this->content->mockedDefineParam('imageParam', 'aaa/bbb');
 
-	$this->content->mockedDefineParam(
-            'link',
-            [
-                'type' => 'linkSelector',
-                'label'      => 'Link',
-                'value'      =>  'val'	 
-            ]
-        );
-	$prop1 = $this->invokeMethod($this->property, 'iconizeByParam', array($this->content, 'link'));
-	$this->assertTrue($prop1 == '/val');
-	
-	
-	$this->content->mockedDefineParam(
-            'linkNull',
-            [
-                'type' => 'linkSelector',
-                'label'      => 'Link',
-                'value'      => null	 
-            ]
-        );
-	$prop2 = $this->invokeMethod($this->property, 'iconizeByParam', array($this->content, 'linkNull'));
-	$this->assertNull($prop2);
+	$prop1 = $this->invokeMethod($this->property, 'iconizeByParam', array($this->content, 'imageParam'));
+	$this->assertTrue($prop1 == '/aaa/bbb');
 	
 	$prop3 = $this->invokeMethod($this->property, 'iconizeByParam', array($this->content, 'linkTest'));
 	$this->assertNull($prop3);
@@ -146,34 +113,8 @@ class PropertyIconizerTest extends BackBeeTestCase {
 
 
     public function testIconizedByElement()
-    {
-	$this->content	 
-	    ->mockedDefineData(
-		'image',
-		'BackBee\ClassContent\Element\Image',
-		array()
-	    )
-	    ->mockedDefineData(
-		'test_image',
-		'BackBee\ClassContent\Element\Image',
-		array()
-	    )
-	    ->setProperty(
-		'iconized-by',
-		 array(
-			0 => array(
-			    0 => 'image->path',
-			),
-		 )
-	    );
-	 $prop1 = $this->invokeMethod($this->property, 'iconizedByElement', array($this->content, 'image'));
-	 $this->assertTrue(is_a($prop1, 'BackBee\ClassContent\Element\Image'));  
-	 
-	 $prop2 = $this->invokeMethod($this->property, 'iconizedByElement', array($this->content, 'test_image'));
-	 $this->assertTrue(is_a($prop2, 'BackBee\ClassContent\Element\Image'));
-	
-	// $prop3 = $this->invokeMethod($this->property, 'iconizedByElement', array($this->content, 'test'));
-	//  $this->assertNull($prop3);
+    { 
+	    // tested in getIcon
 
    }
     

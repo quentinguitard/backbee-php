@@ -60,19 +60,26 @@ class ThumbnailIconizerTest extends BackBeeTestCase
     
     public function testGetIcon()
     {
-	$icon1 = $this->thumbhnail->getIcon($this->content);
-	$this->assertTrue('/resources/img/contents/default_thumbnail.png' === $icon1);
 	$this->content
-	     ->mockedDefineData(
+	     ->setProperty('iconized-by', 'image->path');
+	
+	$this->content   ->mockedDefineData(
 		'image',
 		'BackBee\ClassContent\Element\Image',
-		array('')
+		array()
 	    );
+	$this->content->image->path = '/images/img/contents/test.png';
+	
+	$icon1 = $this->thumbhnail->getIcon($this->content);
+	$this->assertTrue('/resources/img/contents/default_thumbnail.png' == $icon1);
+	
+	
 	 $this->content
-	     ->mockedDefineProperty('iconized-by', 'image');
+	     ->mockedDefineProperty('iconized-by', 'aaa');
 	
 	$icon2 = $this->thumbhnail->getIcon($this->content);
 	$this->assertTrue('/resources/img/contents/default_thumbnail.png' == $icon2);
+
 
     }
     
@@ -97,15 +104,20 @@ class ThumbnailIconizerTest extends BackBeeTestCase
 	$this->assertNotNull($resource1);
 	$this->assertTrue($resource1 == 'img/contents/default_thumbnail.png');
 	
-	$resource2 = $this->invokeMethod($this->thumbhnail,'resolveResourceThumbnail', array('picto-extnd.png'));
+	$resource2 = $this->invokeMethod($this->thumbhnail,'resolveResourceThumbnail', array('test.png'));
 	$this->assertNotNull($resource2);
-	$this->assertTrue($resource2 == 'img/contents/picto-extnd.png');
+	$this->assertTrue($resource2 == 'img/contents/test.png');
     }
     
     public function testGetThumbnailBaseFolderPaths(){
 	$base1 = $this->invokeMethod($this->thumbhnail,'getThumbnailBaseFolderPaths');
-	$this->assertTrue(in_array(self::$app->getContainer()->getParameter('classcontent_thumbnail.base_folder'), $base1));
+	$arrResDir = array();
 
+	foreach(self::$app->getResourceDir() as $resDir){
+	    $arrResDir[] = $resDir.DIRECTORY_SEPARATOR.self::$app->getContainer()->getParameter('classcontent_thumbnail.base_folder');
+	}
+
+	$this->assertTrue(count(array_intersect($arrResDir, $base1)) > 0);
     }
     
 

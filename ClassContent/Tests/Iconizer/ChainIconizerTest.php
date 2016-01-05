@@ -30,6 +30,7 @@ use BackBee\Tests\BackBeeTestCase;
 use BackBee\ClassContent\Iconizer\ChainIconizer;
 use BackBee\ClassContent\Iconizer\IconizerInterface;
 use BackBee\ClassContent\Iconizer\ThumbnailIconizer;
+use BackBee\ClassContent\Iconizer\PropertyIconizer;
 
 /**
  * @category    BackBee
@@ -58,16 +59,25 @@ class ChainIconizerTest extends BackBeeTestCase
 		array('')
 	    );
 	 $this->content
-	     ->mockedDefineProperty('iconized-by', 'image');
+	     ->mockedDefineProperty('iconized-by', 'image->path');
+	 $this->content->image->path = 'aaa/test';
 	
 	$arrIconizer = array();
-	$n = 10;
-	for($i=0;i<=$n;$i++){
-	    $arrIconizer[] = new ThumbnailIconizer(self::$app);
+	$n = 10;	
+	for($i=0;$i<=$n;$i++){
+	       $arrIconizer[] = new ThumbnailIconizer(self::$app);
 	}
 	$this->chain = new ChainIconizer($arrIconizer);
-	$test1 = $this->chain->getIcon($this->content);
+	$test1 = $this->chain->getIcon($this->content);	
 	$this->assertTrue('/resources/img/contents/default_thumbnail.png' == $test1);
+	
+	$arrIconizerProp = array();	
+	for($i=0;$i<=$n;$i++){
+	       $arrIconizerProp[] = new PropertyIconizer(self::$app->getRouting());
+	}
+	$this->chain = new ChainIconizer($arrIconizerProp);
+	$test2 = $this->chain->getIcon($this->content);	
+	$this->assertTrue($test2 == '/images/aaa/test');
 
     }
 
