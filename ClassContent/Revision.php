@@ -674,7 +674,7 @@ class Revision extends AbstractContent implements \Iterator, \Countable
             );
         } else {
             throw new ClassContentException(
-                sprintf('Content can not be commited (state : %s)', $revision->getState()),
+                sprintf('Content can not be commited (state : %s)', $this->getState()),
                 ClassContentException::REVISION_UPTODATE
             );
         }
