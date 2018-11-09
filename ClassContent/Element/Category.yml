@@ -1,0 +1,11 @@
+Category:
+  repository: \BackBeeCloud\ClassContent\Repository\Element\CategoryRepository
+  properties:
+    name: Category
+    description: An attached category
+  elements:
+    value: !!scalar
+  fixture:
+    value: word
+  parameters:
+    objectkeyword: []
